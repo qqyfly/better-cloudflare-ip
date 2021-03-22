@@ -95,7 +95,7 @@ do
 		rm -rf anycast.txt
 		while true
 		do
-			p=$(ps -ef | grep ping | grep -v "grep" | wc -l)
+			p=$(ps -ef | grep "ping -c" | grep -v "grep" | wc -l)
 			if [ $p -ne 0 ]
 			then
 				echo 等待 ICMP 进程结束:剩余进程数 $p
@@ -105,7 +105,7 @@ do
 				break
 			fi
 		done
-		cat icmp/*.log | sed -n '3~5p;4~5p;5~5p' | sed 'N;N;s/\n/ /g' | awk -F, '{print $1,$3,$4}' | sort -t' ' -n -k 9 | awk -F/ '{print $1,$5}' | awk '{print $2,$9,$16}' | sort -t' ' -n -k 2 -k 3 | awk '{print $1}' | sed '21,$d' > ip.txt
+		cat icmp/*.log | awk 'NR%5==3||NR%5==4||NR%5==0' | sed 'N;N;s/\n/ /g' | awk -F, '{print $1,$3,$4}' | sort -t' ' -n -k 9 | awk -F/ '{print $1,$5}' | awk '{print $2,$9,$16}' | sort -t' ' -n -k 2 -k 3 | awk '{print $1}' | sed '21,$d' > ip.txt
 		rm -rf icmp
 		echo 选取20个丢包率最少的IP地址下载测速
 		mkdir temp
